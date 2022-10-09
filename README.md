@@ -1,1 +1,1 @@
-# This is my first commit 
+# Learning to use typscript in React and Node.
