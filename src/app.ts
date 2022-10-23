@@ -1,3 +1,24 @@
+
+// Create the interface
+
+
+// Create the validation function
+function autobind(target:any,methodName: string, descriptor: PropertyDescriptor) {
+    console.log("The target :", target)
+    console.log("The method name :", methodName)
+    console.log("The descriptor object :", descriptor)
+    const originalMethod = descriptor.value
+    const adjustedDescriptor: PropertyDescriptor = {
+        configurable: true,
+        get(){
+            const boundFn = originalMethod.bind(this)
+            return boundFn
+        }
+    }
+    console.log("The adjusted descriptor object :", adjustedDescriptor)
+    return adjustedDescriptor
+}
+
 class ProjectInput {
     templateElement: HTMLTemplateElement;
     hostElement: HTMLDivElement;
@@ -15,16 +36,43 @@ class ProjectInput {
         this.element.id = 'user-input';
 
         this.titleInputElement = this.element.querySelector('#title') as HTMLInputElement;
-        this.descriptionInputElement = this.element.querySelector('#title') as HTMLInputElement;
-        this.peopleInputElement = this.element.querySelector('#title') as HTMLInputElement;
+        this.descriptionInputElement = this.element.querySelector('#description') as HTMLInputElement;
+        this.peopleInputElement = this.element.querySelector('#people') as HTMLInputElement;
        
         this.configure()
         this.attach()
     }
 
+    // gather user input function
+    private gatherUserInput(): [string, string,number ] | void {
+        const enteredTitle = this.titleInputElement.value
+        const enteredDescription = this.descriptionInputElement.value
+        const enteredPeople = this.peopleInputElement.value
+
+        if(enteredTitle.trim().length === 0 || enteredDescription.trim().length === 0 || enteredPeople.trim().length === 0) {
+            alert('Innvalid input, please try again')
+            return
+        } else {
+            return [enteredTitle, enteredDescription, +enteredPeople]
+        }
+    }
+    // Clear input function
+    private clearInputs(){
+        this.titleInputElement.value = ''
+        this.descriptionInputElement.value = ''
+        this.peopleInputElement.value = ''
+
+    }
+    @autobind
     private submitHandler(event: Event){
         event.preventDefault();
-        console.log("I am being submitted")
+        const userInput = this.gatherUserInput()
+        if(Array.isArray(userInput)){
+            const [title, desc, people] = userInput
+            console.log("The user inputs arre :", title , desc, people)
+        }
+        this.clearInputs()
+
     }
     
     private configure(){
